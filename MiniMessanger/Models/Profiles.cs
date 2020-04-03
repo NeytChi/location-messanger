@@ -10,6 +10,9 @@
         public string ProfileCity { get; set; }
         public double profileLatitude { get; set; }
         public double profileLongitude { get; set; }
+        public int weight { get; set; }
+        public int height { get; set; }
+        public string status { get; set; }
         public virtual User User { get; set; }
     }
 }

@@ -380,6 +380,18 @@ namespace miniMessanger.Models
                     .HasColumnName("profile_longitude")
                     .HasColumnType("double");
 
+                entity.Property(p => p.weight)
+                    .HasColumnName("weight")
+                    .HasColumnType("int(11)");
+
+                entity.Property(p => p.height)
+                    .HasColumnName("height")
+                    .HasColumnType("int(11)");
+                
+                entity.Property(p => p.status)
+                    .HasColumnName("status")
+                    .HasColumnType("varchar(300)");
+
                 entity.HasOne(d => d.User)
                     .WithOne(p => p.Profile)
                     .HasForeignKey<Profile>(e => e.UserId)
