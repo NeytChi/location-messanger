@@ -1,4 +1,5 @@
 using System;
+using System.Web;
 using Serilog;
 using System.Linq;
 using Serilog.Core;
@@ -27,24 +28,26 @@ namespace miniMessanger
             string profileCity = null,
             string profileAge = null,
             double? profileLatitude = null,
-            double? profileLongitude = null)
+            double? profileLongitude = null,
+            int height = 0,
+            int weight = 0,
+            string status = null)
         {
             Profile profile = CreateIfNotExistProfile(userId);
-            if (UpdateGender(profile, profileGender, ref message)) {
-                if (UpdateAge(profile, profileAge, ref message)) {
-                    if (UpdateCity(profile, profileCity, ref message)) {
-                        if (UpdatePhoto(photo, profile, ref message)) {
-                            if (UpdateLocation(profile, profileLatitude, profileLongitude)) {
-                                log.Information("Update profile, id -> " + userId);
-                                return profile;
-                            }
-                        }
-                    }
-                }
-            }
+            if (UpdateGender(ref profile, profileGender, ref message)) 
+                if (UpdateAge(ref profile, profileAge, ref message)) 
+                    if (UpdateCity(ref profile, profileCity, ref message)) 
+                        if (UpdatePhoto(photo,ref profile, ref message)) 
+                            if (UpdateLocation(ref profile, profileLatitude, profileLongitude))
+                                if (UpdateHeight(ref profile, height, ref message)) 
+                                    if (UpdateWeight(ref profile, weight, ref message)) 
+                                        if (UpdateStatus(ref profile, status, ref message)) {
+                                            log.Information("Update profile, id -> " + userId);
+                                            return profile;
+                                        }
             return null;
         }
-        public bool UpdateGender(Profile profile, string profileGender, ref string message)
+        public bool UpdateGender(ref Profile profile, string profileGender, ref string message)
         {
             if (profileGender != null) {
                 if (profileGender == "1")
@@ -62,7 +65,7 @@ namespace miniMessanger
             }
             return true;
         }
-        public bool UpdateAge(Profile profile, string profileAge, ref string message)
+        public bool UpdateAge(ref Profile profile, string profileAge, ref string message)
         {
             if (profileAge != null)
             {
@@ -83,7 +86,7 @@ namespace miniMessanger
             }
             return true;
         }
-        public bool UpdateCity(Profile profile, string profileCity, ref string message)
+        public bool UpdateCity(ref Profile profile, string profileCity, ref string message)
         {
             if (profileCity != null)
             {
@@ -100,7 +103,7 @@ namespace miniMessanger
             }
             return true;
         }
-        public bool UpdatePhoto(IFormFile photo, Profile profile, ref string message)
+        public bool UpdatePhoto(IFormFile photo, ref Profile profile, ref string message)
         {
             if (photo != null)
             {
@@ -121,7 +124,7 @@ namespace miniMessanger
             }
             return true;
         }
-        public bool UpdateLocation(Profile profile, double? profileLatitude, double? profileLongitude)
+        public bool UpdateLocation(ref Profile profile, double? profileLatitude, double? profileLongitude)
         {
             if (profileLatitude != null && profileLongitude != null) {
                 profile.profileLatitude = (double)profileLatitude;
@@ -145,6 +148,57 @@ namespace miniMessanger
                 context.SaveChanges();
             }
             return profile;
+        }
+        public bool UpdateHeight(ref Profile profile, int height, ref string message)
+        {
+            if (height != 0) {
+                if (height >= 100 && height <= 300) {
+                    profile.height = height;
+                    context.Profile.Update(profile);
+                    context.SaveChanges();
+                    log.Information("Update height profile, id -> " + profile.ProfileId);
+                    return true;
+                }
+                else
+                    message = "Height can't be more 300 & less 100";
+                return false;
+            }
+            return true;
+        }
+
+        public bool UpdateWeight(ref Profile profile, int weight, ref string message)
+        {
+            if (weight != 0) {
+                if (weight >= 40 && weight <= 400) {
+                    profile.weight = weight;
+                    context.Profile.Update(profile);
+                    context.SaveChanges();
+                    log.Information("Update weight profile, id -> " + profile.ProfileId);
+                    return true;
+                }
+                else
+                    message = "Weight can't be more 400 & less 40";
+                return false;
+            }
+            return true;
+        }
+        public bool UpdateStatus(ref Profile profile, string status, ref string message)
+        {
+            if (!string.IsNullOrEmpty(status)) {
+                status = HttpUtility.UrlDecode(status);
+                if (status.Length <= 300) {
+                    profile.status = status;
+                    context.Profile.Update(profile);
+                    context.SaveChanges();
+                    log.Information("Update status profile, id -> " + profile.ProfileId);
+                    return true;
+                }
+                else {
+                    message = "Status can't be more that 300 characters.";
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

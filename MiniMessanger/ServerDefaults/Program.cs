@@ -14,9 +14,7 @@ namespace Instasoft
         public static void Main(string[] args)
         {
             using (Context context = new Context(true))
-            {
                 context.Database.EnsureCreated();
-            }
             Config config = new Config();
             HostHttp = config.GetHostsUrl();
             HostHttps = config.GetHostsHttpsUrl();

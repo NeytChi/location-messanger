@@ -11,6 +11,7 @@ namespace miniMessanger.Test
         public Users users;
         public Context context;
         public Authentication authentication;
+        public Profile profile;
         public string message;
         public TestUsers()
         {
@@ -127,13 +128,15 @@ namespace miniMessanger.Test
         [Test]
         public void GetUserByGender()
         {
+            Profile profile;
             DeleteUsers();
             User first  = CreateMockingUser();
             User second = CreateMockingUser();
             User third  = CreateMockingUser();
             Profiles profiles = new Profiles(context);
                 first.Profile = profiles.CreateIfNotExistProfile(first.UserId);
-                profiles.UpdateGender(first.Profile, "1", ref message);
+                profile = first.Profile;
+                profiles.UpdateGender(ref profile, "1", ref message);
             var success = users.GetUsersByGender(first.UserId, true, 0, 2);
             Assert.AreEqual(success[0].user_id, third.UserId);
             Assert.AreEqual(success[1].user_id, second.UserId);
@@ -147,7 +150,8 @@ namespace miniMessanger.Test
             User third  = CreateMockingUser();
             Profiles profiles = new Profiles(context);
                 first.Profile = profiles.CreateIfNotExistProfile(first.UserId);
-                profiles.UpdateGender(first.Profile, "1", ref message);
+                profile = first.Profile;
+                profiles.UpdateGender(ref profile, "1", ref message);
             Blocks blocks = new Blocks(users, context);
                 blocks.BlockUser(first.UserToken, third.UserPublicToken, "Test block.", ref message);
             var successWithBlocked = users.GetUsersByGender(first.UserId, true, 0, 1);
@@ -162,7 +166,8 @@ namespace miniMessanger.Test
             User third  = CreateMockingUser();
             Profiles profiles = new Profiles(context);
                 first.Profile = profiles.CreateIfNotExistProfile(first.UserId);
-                profiles.UpdateGender(first.Profile, "1", ref message);   
+                profile = first.Profile;
+                profiles.UpdateGender(ref profile, "1", ref message);   
             users.CreateLike(first.UserId, third.UserId);
             var successWithLiked = users.GetUsersByGender(first.UserId, true, 0, 1);
             Assert.AreEqual(successWithLiked[0].user_id, second.UserId);
@@ -176,7 +181,8 @@ namespace miniMessanger.Test
             User thirdUser  = CreateMockingUser();
             Profiles profiles = new Profiles(context);
                 firstUser.Profile = profiles.CreateIfNotExistProfile(firstUser.UserId);
-                profiles.UpdateGender(firstUser.Profile, "1", ref message);   
+                profile = firstUser.Profile;
+                profiles.UpdateGender(ref profile, "1", ref message);   
             users.CreateLike(firstUser.UserId, thirdUser.UserId);
             users.CreateLike(firstUser.UserId, secondUser.UserId);
             var success = users.GetLikedUsers(firstUser.UserId, true, 0, 2);
@@ -192,7 +198,8 @@ namespace miniMessanger.Test
             User thirdUser  = CreateMockingUser();
             Profiles profiles = new Profiles(context);
                 firstUser.Profile = profiles.CreateIfNotExistProfile(firstUser.UserId);
-                profiles.UpdateGender(firstUser.Profile, "1", ref message);   
+                profile = firstUser.Profile;
+                profiles.UpdateGender(ref profile, "1", ref message);   
             users.CreateLike(firstUser.UserId, thirdUser.UserId);
             users.CreateLike(firstUser.UserId, secondUser.UserId);
             Blocks blocks = new Blocks(users, context);
@@ -209,7 +216,8 @@ namespace miniMessanger.Test
             User thirdUser  = CreateMockingUser();
             Profiles profiles = new Profiles(context);
                 firstUser.Profile = profiles.CreateIfNotExistProfile(firstUser.UserId);
-                profiles.UpdateGender(firstUser.Profile, "1", ref message);   
+                profile = firstUser.Profile;
+                profiles.UpdateGender(ref profile, "1", ref message);   
             users.CreateLike(secondUser.UserId, firstUser.UserId);
             users.CreateLike(thirdUser.UserId, firstUser.UserId);
             var success = users.GetReciprocalUsers(firstUser.UserId, true, 0, 2);
@@ -225,7 +233,8 @@ namespace miniMessanger.Test
             User thirdUser  = CreateMockingUser();
             Profiles profiles = new Profiles(context);
                 firstUser.Profile = profiles.CreateIfNotExistProfile(firstUser.UserId);
-                profiles.UpdateGender(firstUser.Profile, "1", ref message);   
+                profile = firstUser.Profile;
+                profiles.UpdateGender(ref profile, "1", ref message);   
             users.CreateLike(thirdUser.UserId, firstUser.UserId);
             users.CreateLike(secondUser.UserId, firstUser.UserId);
             Blocks blocks = new Blocks(users, context);
@@ -243,7 +252,8 @@ namespace miniMessanger.Test
             User fourthUser = CreateMockingUser();
             Profiles profiles = new Profiles(context);
                 firstUser.Profile = profiles.CreateIfNotExistProfile(firstUser.UserId);
-                profiles.UpdateGender(firstUser.Profile, "1", ref message);   
+                profile = firstUser.Profile;
+                profiles.UpdateGender(ref profile, "1", ref message);   
             users.CreateLike(firstUser.UserId, secondUser.UserId);
             users.CreateLike(thirdUser.UserId, firstUser.UserId);
             users.CreateLike(fourthUser.UserId, firstUser.UserId);
@@ -261,7 +271,8 @@ namespace miniMessanger.Test
             User fourthUser = CreateMockingUser();
             Profiles profiles = new Profiles(context);
                 firstUser.Profile = profiles.CreateIfNotExistProfile(firstUser.UserId);
-                profiles.UpdateGender(firstUser.Profile, "1", ref message);   
+                profile = firstUser.Profile;
+                profiles.UpdateGender(ref profile, "1", ref message);   
             users.CreateLike(firstUser.UserId, secondUser.UserId);
             users.CreateLike(thirdUser.UserId, firstUser.UserId);
             users.CreateLike(fourthUser.UserId, firstUser.UserId);

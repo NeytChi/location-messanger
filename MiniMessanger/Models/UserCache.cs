@@ -17,6 +17,10 @@ namespace miniMessanger.Models
         public string blocked_reason;
         public double profile_latitude;
         public double profile_longitude;
-
+        public int weight_from;
+        public int weight_to;
+        public int height_from;
+        public int height_to;
+        public string status;
     }
 }

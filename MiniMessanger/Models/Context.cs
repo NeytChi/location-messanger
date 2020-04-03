@@ -390,7 +390,7 @@ namespace miniMessanger.Models
                 
                 entity.Property(p => p.status)
                     .HasColumnName("status")
-                    .HasColumnType("varchar(300)");
+                    .HasColumnType("varchar(300) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT ''");
 
                 entity.HasOne(d => d.User)
                     .WithOne(p => p.Profile)

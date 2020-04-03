@@ -201,12 +201,58 @@ namespace miniMessanger.Manage
                     profile_gender = profile.ProfileGender,
                     profile_city = profile.ProfileCity == null  ? "" : profile.ProfileCity,
                     profile_latitude = profile.profileLatitude,
-                    profile_longitude = profile.profileLongitude
+                    profile_longitude = profile.profileLongitude,
+                    weight = profile.weight,
+                    height = profile.height,
+                    status = profile.status
                 },
                 liked_user = false,
                 disliked_user = likes.Any(l => l.Dislike && l.UserId == userid) ? true : false
             })
             .Skip(page * count).Take(count).ToList();
+        }
+        public dynamic GetUsersByProfile(int userid, Profile userProfile, UserCache cache)
+        {
+            log.Information("Get users by location, id -> " + userid);
+            return (from users in context.User
+                join profile in context.Profile on users.UserId equals profile.UserId
+                join likesProfile in context.LikeProfile on users.UserId equals likesProfile.ToUserId into likes    
+                join block in context.BlockedUsers on users.UserId equals block.BlockedUserId into blocks
+            where users.UserId != userid
+                && (profile.weight >= cache.weight_from && profile.weight <= cache.weight_to)
+                && (profile.height >= cache.height_from && profile.height <= cache.height_to)
+                && profile.status.Contains(cache.status)
+                && profile.ProfileGender !=  userProfile.ProfileGender
+                && (!likes.Any(l => l.UserId == userid && l.Like))
+                && users.Activate == 1
+                && !users.Deleted
+                && ( blocks.All(b => b.UserId == userid && b.BlockedDeleted) || blocks.Count() == 0)
+            orderby Math.Abs(profile.profileLatitude - userProfile.profileLatitude), 
+                Math.Abs(profile.profileLongitude - userProfile.profileLongitude)
+            select new 
+            { 
+                user_id = users.UserId,
+                user_email = users.UserEmail,
+                user_login = users.UserLogin,
+                created_at = users.CreatedAt,
+                last_login_at = users.LastLoginAt,
+                user_public_token = users.UserPublicToken,
+                profile = new 
+                {
+                    url_photo = profile.UrlPhoto == null ? "" : awsPath + profile.UrlPhoto,
+                    profile_age = profile.ProfileAge == null ? -1 : profile.ProfileAge,
+                    profile_gender = profile.ProfileGender,
+                    profile_city = profile.ProfileCity == null  ? "" : profile.ProfileCity,
+                    profile_latitude = profile.profileLatitude,
+                    profile_longitude = profile.profileLongitude,
+                    weight = profile.weight,
+                    height = profile.height,
+                    status = profile.status
+                },
+                liked_user = false,
+                disliked_user = likes.Any(l => l.Dislike && l.UserId == userid) ? true : false
+            })
+            .Skip(cache.page * cache.count).Take(cache.count).ToList();
         }
         /// <summary>
         /// Select list of users with profile data, like and dislike keys.
@@ -240,7 +286,10 @@ namespace miniMessanger.Manage
                     profile_gender = profile.ProfileGender,
                     profile_city = profile.ProfileCity == null  ? "" : profile.ProfileCity,
                     profile_latitude = profile.profileLatitude,
-                    profile_longitude = profile.profileLongitude
+                    profile_longitude = profile.profileLongitude,
+                    weight = profile.weight,
+                    height = profile.height,
+                    status = profile.status
                 },
                 liked_user = false,
                 disliked_user = likes.Any(l => l.Dislike && l.UserId == userid) ? true : false
@@ -296,7 +345,10 @@ namespace miniMessanger.Manage
                     profile_gender = profile.ProfileGender,
                     profile_city = profile.ProfileCity == null  ? "" : profile.ProfileCity,
                     profile_latitude = profile.profileLatitude,
-                    profile_longitude = profile.profileLongitude
+                    profile_longitude = profile.profileLongitude,
+                    weight = profile.weight,
+                    height = profile.height,
+                    status = profile.status
                 },
                 liked_user = like.Like,
                 disliked_user = like.Dislike
@@ -329,7 +381,10 @@ namespace miniMessanger.Manage
                     profile_gender = profile.ProfileGender,
                     profile_city = profile.ProfileCity == null  ? "" : profile.ProfileCity,
                     profile_latitude = profile.profileLatitude,
-                    profile_longitude = profile.profileLongitude
+                    profile_longitude = profile.profileLongitude,
+                    weight = profile.weight,
+                    height = profile.height,
+                    status = profile.status
                 },
                 liked_user = like.Like,
                 disliked_user = like.Dislike

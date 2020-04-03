@@ -119,7 +119,10 @@ namespace Controllers
                             profile_gender = user.Profile.ProfileGender,
                             profile_city = user.Profile.ProfileCity == null  ? "" : user.Profile.ProfileCity,
                             profile_latitude = user.Profile.profileLatitude,
-                            profile_longitude = user.Profile.profileLongitude
+                            profile_longitude = user.Profile.profileLongitude,
+                            weight = user.Profile.weight,
+                            height = user.Profile.height,
+                            status = user.Profile.status
                         }    
                     };
                 }
@@ -226,7 +229,10 @@ namespace Controllers
                     Request.Form["profile_city"], 
                     Request.Form["profile_age"],
                     ConvertDouble(Request.Form["profile_latitude"]),
-                    ConvertDouble(Request.Form["profile_longitude"]));
+                    ConvertDouble(Request.Form["profile_longitude"]),
+                    ConvertInt(Request.Form["height"]),
+                    ConvertInt(Request.Form["weight"]),
+                    Request.Form["status"]);
                 if (user.Profile != null) 
                     return new 
                     { 
@@ -250,7 +256,11 @@ namespace Controllers
                     Request.Form["profile_city"], 
                     Request.Form["profile_age"], 
                     ConvertDouble(Request.Form["profile_latitude"]),
-                    ConvertDouble(Request.Form["profile_longitude"]));
+                    ConvertDouble(Request.Form["profile_longitude"]),
+                    ConvertInt(Request.Form["height"]),
+                    ConvertInt(Request.Form["weight"]),
+                    Request.Form["status"]
+                    );
                 if (user.Profile != null)
                     return new { 
                         success = true, 
@@ -270,7 +280,10 @@ namespace Controllers
                 profile_gender = profile.ProfileGender,
                 profile_city = profile.ProfileCity == null  ? "" : profile.ProfileCity,
                 profile_latitude = profile.profileLatitude,
-                profile_longitude = profile.profileLongitude
+                profile_longitude = profile.profileLongitude,
+                weight = profile.weight,
+                height = profile.height,
+                status = profile.status
             };
         }
         [HttpPost]
@@ -292,8 +305,8 @@ namespace Controllers
             string message = null;
             User user = users.GetUserByToken(cache.user_token, ref message);
             if (user != null) {
-                user.Profile = authentication.CreateIfNotExistProfile(user.UserId);
-                profiles.UpdateLocation(user.Profile, cache.profile_latitude, cache.profile_longitude);
+                Profile profile = authentication.CreateIfNotExistProfile(user.UserId);
+                profiles.UpdateLocation(ref profile, cache.profile_latitude, cache.profile_longitude);
                 return new { success = true, data = ProfileToResponse(user.Profile) };
             }
             return Return500Error(message);
@@ -503,6 +516,18 @@ namespace Controllers
             return Return500Error(message);
         }
         [HttpPut]
+        [ActionName("GetUsersByProfile")]
+        public ActionResult<dynamic> GetUsersByProfile(UserCache cache)
+        {
+            string message = null;
+            cache.count = cache.count == 0 ? 30 : cache.count;
+            User user = users.GetUserWithProfile(cache.user_token, ref message);
+            if (user != null)
+                return new { success = true, 
+                    data = users.GetUsersByProfile(user.UserId, user.Profile, cache) };
+            return Return500Error(message);
+        }
+        [HttpPut]
         [ActionName("SelectChatsByGender")]
         public ActionResult<dynamic> SelectChatsByGender(UserCache cache)
         {
@@ -585,6 +610,15 @@ namespace Controllers
                     return result;
             }
             return null;
+        }
+        public int ConvertInt(string value)
+        {
+            int result;
+            if (!string.IsNullOrEmpty(value)) {
+                if (Int32.TryParse(value, out result)) 
+                    return result;
+            }
+            return 0;
         }
     }
 }

@@ -205,6 +205,7 @@ namespace miniMessanger.Test
         public void GetChatsByGender()
         {
             DeleteUsers();
+            Profile profile;
             Profiles profiles = new Profiles(context);
             User firstUser  = CreateMockingUser();
             User secondUser = CreateMockingUser();
@@ -212,7 +213,8 @@ namespace miniMessanger.Test
             Chatroom firstRoom  = chats.CreateChat(firstUser.UserToken, secondUser.UserPublicToken, ref message);
             Chatroom secondRoom = chats.CreateChat(firstUser.UserToken, thirdUser.UserPublicToken, ref message);
             var firstMessage  = chats.CreateMessage("Text.", firstUser.UserToken, firstRoom.ChatToken, ref message);
-            profiles.UpdateGender(firstUser.Profile, "1", ref message);
+            profile = firstUser.Profile;
+            profiles.UpdateGender(ref profile, "1", ref message);
             var success = chats.GetChatsByGender(firstUser.UserId, true, 0, 2);
             Assert.AreEqual(success[0].user.user_id, thirdUser.UserId);
             Assert.AreEqual(success[1].user.user_id, secondUser.UserId);
@@ -227,6 +229,7 @@ namespace miniMessanger.Test
         public void GetChatsByGenderWithBlocked()
         {
             DeleteUsers();
+            Profile profile;
             Profiles profiles = new Profiles(context);
             Blocks blocks = new Blocks(new Users(context, new Validator()), context);
             User firstUser  = CreateMockingUser();
@@ -234,7 +237,8 @@ namespace miniMessanger.Test
             User thirdUser  = CreateMockingUser();
             Chatroom firstRoom  = chats.CreateChat(firstUser.UserToken, secondUser.UserPublicToken, ref message);
             Chatroom secondRoom = chats.CreateChat(firstUser.UserToken, thirdUser.UserPublicToken, ref message);
-            profiles.UpdateGender(firstUser.Profile, "1", ref message);
+            profile = firstUser.Profile;
+            profiles.UpdateGender(ref profile, "1", ref message);
             blocks.BlockUser(firstUser.UserToken, thirdUser.UserPublicToken, "Test block.", ref message);
             var successWithBlocked = chats.GetChatsByGender(firstUser.UserId, true, 0, 1);
             Assert.AreEqual(successWithBlocked[0].user.user_id, secondUser.UserId);
@@ -245,6 +249,7 @@ namespace miniMessanger.Test
         public void GetChatsByGenderWithLiked()
         {
             DeleteUsers();
+            Profile profile;
             Profiles profiles = new Profiles(context);
             Users users = new Users(context, new Validator());
             User firstUser  = CreateMockingUser();
@@ -253,7 +258,8 @@ namespace miniMessanger.Test
             Chatroom firstRoom  = chats.CreateChat(firstUser.UserToken, secondUser.UserPublicToken, ref message);
             Chatroom secondRoom = chats.CreateChat(firstUser.UserToken, thirdUser.UserPublicToken, ref message);
             var firstMessage  = chats.CreateMessage("Text.", firstUser.UserToken, firstRoom.ChatToken, ref message);
-            profiles.UpdateGender(firstUser.Profile, "1", ref message);
+            profile = firstUser.Profile;
+            profiles.UpdateGender(ref profile, "1", ref message);
             users.CreateLike(firstUser.UserId, thirdUser.UserId);
             users.CreateDislike(firstUser.UserId, secondUser.UserId);
             var success = chats.GetChatsByGender(firstUser.UserId, true, 0, 2);

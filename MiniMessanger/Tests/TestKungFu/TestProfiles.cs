@@ -34,10 +34,11 @@ namespace miniMessanger.Test
         public void UpdateGender()
         {
             User user = CreateMockingUser();
-            bool resultMan = profiles.UpdateGender(user.Profile, "1", ref message);
-            bool resultWoman = profiles.UpdateGender(user.Profile, "0", ref message);
-            bool withoutGender = profiles.UpdateGender(user.Profile, null, ref message);
-            bool wrongGender = profiles.UpdateGender(user.Profile, "2",  ref message);
+            Profile profile = user.Profile;
+            bool resultMan = profiles.UpdateGender(ref profile, "1", ref message);
+            bool resultWoman = profiles.UpdateGender(ref profile, "0", ref message);
+            bool withoutGender = profiles.UpdateGender(ref profile, null, ref message);
+            bool wrongGender = profiles.UpdateGender(ref profile, "2",  ref message);
             Assert.AreEqual(resultMan, true);
             Assert.AreEqual(resultWoman, true);
             Assert.AreEqual(withoutGender, true);
@@ -47,10 +48,11 @@ namespace miniMessanger.Test
         public void UpdateAge()
         {
             User user = CreateMockingUser();
-            bool result = profiles.UpdateAge(user.Profile, "28", ref message);
-            bool withoutAge = profiles.UpdateAge(user.Profile, null, ref message);
-            bool lessAge = profiles.UpdateAge(user.Profile, "-12", ref message);
-            bool moreAge = profiles.UpdateAge(user.Profile, "230",  ref message);
+            Profile profile = user.Profile;
+            bool result = profiles.UpdateAge(ref profile, "28", ref message);
+            bool withoutAge = profiles.UpdateAge(ref profile, null, ref message);
+            bool lessAge = profiles.UpdateAge(ref profile, "-12", ref message);
+            bool moreAge = profiles.UpdateAge(ref profile, "230",  ref message);
             Assert.AreEqual(result, true);
             Assert.AreEqual(withoutAge, true);
             Assert.AreEqual(lessAge, false);
@@ -60,10 +62,11 @@ namespace miniMessanger.Test
         public void UpdateCity()
         {
             User user = CreateMockingUser();
-            bool result = profiles.UpdateCity(user.Profile, "California", ref message);
-            bool withoutCity = profiles.UpdateCity(user.Profile, null, ref message);
-            bool lessChars = profiles.UpdateCity(user.Profile, "12", ref message);
-            bool moreChars = profiles.UpdateCity(user.Profile, "123456789012345678901234567890123456789012345678901"
+            Profile profile = user.Profile;
+            bool result = profiles.UpdateCity(ref profile, "California", ref message);
+            bool withoutCity = profiles.UpdateCity(ref profile, null, ref message);
+            bool lessChars = profiles.UpdateCity(ref profile, "12", ref message);
+            bool moreChars = profiles.UpdateCity(ref profile, "123456789012345678901234567890123456789012345678901"
             ,  ref message);
             Assert.AreEqual(result, true);
             Assert.AreEqual(withoutCity, true);
@@ -73,15 +76,17 @@ namespace miniMessanger.Test
         [Test]
         public void UpdatePhoto()
         {
+            Profile profile ;
             byte[] fileBytes = File.ReadAllBytes("/home/neytchi/Configuration/messanger-configuration/parrot.jpg");
             FormFile file = new FormFile(new MemoryStream(fileBytes), 0, 0, "file", "parrot.jpg");
             file.Headers = new HeaderDictionary();
             file.ContentType = "image/jpeg";
             User user = CreateMockingUser();
-            bool result = profiles.UpdatePhoto(file, user.Profile, ref message);
-            bool withoutPhoto = profiles.UpdatePhoto(null, user.Profile, ref message);
+            profile = user.Profile;
+            bool result = profiles.UpdatePhoto(file, ref profile, ref message);
+            bool withoutPhoto = profiles.UpdatePhoto(null, ref profile, ref message);
             file.ContentType = "audio/mp3";
-            bool withWrongType = profiles.UpdatePhoto(file, user.Profile, ref message);
+            bool withWrongType = profiles.UpdatePhoto(file, ref profile, ref message);
             Assert.AreEqual(result, true);
             Assert.AreEqual(withoutPhoto, true);
             Assert.AreEqual(withWrongType, false);
