@@ -382,11 +382,11 @@ namespace miniMessanger.Models
 
                 entity.Property(p => p.weight)
                     .HasColumnName("weight")
-                    .HasColumnType("int(11)");
+                    .HasColumnType("int(11) DEFAULT '60'");
 
                 entity.Property(p => p.height)
                     .HasColumnName("height")
-                    .HasColumnType("int(11)");
+                    .HasColumnType("int(11) DEFAULT '160'");
                 
                 entity.Property(p => p.status)
                     .HasColumnName("status")
